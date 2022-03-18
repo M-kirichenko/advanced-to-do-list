@@ -1,10 +1,11 @@
 class ToDoList{
-    constructor(addButton, deleteButton, editButton, msgEl,inputText){
+    constructor(addButton, deleteButton, editButton, msgEl, inputText, listEl){
         this.addButton = addButton;
         this.deleteButton = deleteButton;
         this.editButton = editButton;
         this.msgEl = msgEl;
         this.inputText = inputText;
+        this.listEl = listEl;
     }
     getData(){
         if(localStorage.toDoList) return JSON.parse(localStorage.toDoList);
@@ -32,45 +33,36 @@ class ToDoList{
         }
         return answer;
     }
-    notify(type, msg, elementRef){
-        let msgColor;
-        if(type==="warning"&&elementRef) {
-            msgColor = "red";
-            elementRef.style.cssText = `border-bottom: 1px solid ${msgColor}`;
-        }
-        else if(type==="success") {
-            msgColor = "green";
-            elementRef.style.cssText = "border-bottom: 1px solid black";
-            setTimeout(()=>this.msgEl.innerText = "", 1000);
-        }
-        this.msgEl.style.color = msgColor;
+    notify(msg, elementRef){
+        elementRef?elementRef.style.cssText = "border-bottom: 1px solid red":false;
         this.msgEl.innerText = msg;
     }
     add(){
-        this.addButton.onclick = ()=>{
-            let toDoList = this.getData();
-            const toDo = {};
-            if(toDoList){
-                const lastId = toDoList[toDoList.length-1].id;
-                toDo.id = lastId+1;
-                toDo.name = this.inputText.value;
-                toDo.done = false;
-            }
-            else{
-                toDoList = [];
-                toDo.id = 1;
-                toDo.name = this.inputText.value;
-                toDo.done = false;
-            }
-            const validToDo = this.validate(toDo.name);
-            if(validToDo === true) {
-                toDoList.push(toDo);
-                localStorage.setItem("toDoList", JSON.stringify(toDoList));
-                this.notify("success", `To-do #${toDo.id} was successfuly added`, this.inputText);
-                this.inputText.value = "";
-            }
-            else this.notify("warning", validToDo.msg, this.inputText);
+        let toDoList = this.getData();
+        const toDo = {};
+        if(toDoList){
+            const lastId = toDoList[toDoList.length-1].id;
+            toDo.id = lastId+1;
+            toDo.name = this.inputText.value;
+            toDo.done = false;
         }
+        else{
+            toDoList = [];
+            toDo.id = 1;
+            toDo.name = this.inputText.value;
+            toDo.done = false;
+        }
+        const validToDo = this.validate(toDo.name);
+
+        if(validToDo === true) {
+            toDoList.push(toDo);
+            localStorage.setItem("toDoList", JSON.stringify(toDoList));
+            this.inputText.value = "";
+            this.msgEl.innerText="";
+            this.inputText.style.cssText="border-bottom: 1p solid black";
+            this.listEl.innerHTML = this.listToHtml(toDoList);
+        }
+        else this.notify(validToDo.msg, this.inputText);
     }
     edit(){
 
@@ -78,8 +70,28 @@ class ToDoList{
     delete(){
 
     }
+    listToHtml(todos){
+        let list = "";
+        todos.forEach(toDo=>{
+            list+=`
+                <li>
+                    <div class="edit-delete">
+                        <span class="edit-icon"><i class="fa fa-edit"></i></span>
+                        <span class="delete-icon"><i class="fa fa-trash-o"></i></span>
+                    </div>
+                <input class="to-do-text" value="${toDo.name}" disabled>
+                    <div class="done">
+                        <i class="fa fa-check-circle"></i>
+                    </div>
+                </li>`;
+        });
+        return list;
+    }
     use(){
-       this.add();
+        const toDoList = this.getData();
+        if(toDoList) this.listEl.innerHTML = this.listToHtml(toDoList);
+        else this.notify("To-do list is empty");
+        this.addButton.onclick = ()=>this.add();
     }
 }
 const inputText = document.querySelector("#to-do-input");
@@ -87,6 +99,7 @@ const addButton = document.querySelector("#to-do-add");
 const deleteButton = document.querySelectorAll(".delete-icon");
 const editButton = document.querySelector(".edit-icon");
 const msgEl = document.querySelector("#msg");
+const listEl = document.querySelector("#to-do-list > ul");
 
-const toDoList = new ToDoList(addButton, deleteButton, editButton, msgEl, inputText);
+const toDoList = new ToDoList(addButton, deleteButton, editButton, msgEl, inputText, listEl);
 toDoList.use();
