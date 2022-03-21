@@ -84,3 +84,6 @@
     text-align: center;
     color:red;
 }
+.to-do-done{
+    text-decoration: line-through;
+}

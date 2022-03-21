@@ -64,7 +64,17 @@ class ToDoList{
         }
         else this.notify(validToDo.msg, this.inputText);
     }
-
+    setDone(id){
+        const updateTodos = this.getData();
+        for(let i=0; i<updateTodos.length; i++){
+            if(updateTodos[i].id === id) {
+                updateTodos[i].done = !updateTodos[i].done; 
+                break;
+            }
+        }
+        localStorage.setItem("toDoList", JSON.stringify(updateTodos));
+        this.listToHtml(updateTodos);
+    }
     createTodo(toDo){
         const li = document.createElement("li");
         const navDiv = document.createElement("div");
@@ -103,6 +113,9 @@ class ToDoList{
         doneDiv.append(spanCheck);
 
         li.append(doneDiv);
+
+        spanCheck.addEventListener("click", ()=>this.setDone(toDo.id));
+
 
         this.listEl.append(li);
     }
