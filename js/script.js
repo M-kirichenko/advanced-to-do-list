@@ -17,7 +17,7 @@ class ToDoList{
             const toDoList = this.getData();
             if(toDoList){
                 for (let i = 0; i < toDoList.length; i++) {
-                    if(toDoList[i].name==name){
+                    if(toDoList[i].name === name){
                         answer = {};
                         answer.valid = false;
                         answer.msg = "To-do already exists";
@@ -41,8 +41,8 @@ class ToDoList{
         let toDoList = this.getData();
         const toDo = {};
         if(toDoList){
-            const lastId = toDoList[toDoList.length-1].id;
-            toDo.id = lastId+1;
+            const lastId = toDoList[toDoList.length - 1].id;
+            toDo.id = lastId + 1;
             toDo.name = this.inputText.value;
             toDo.done = false;
         }
@@ -58,8 +58,8 @@ class ToDoList{
             toDoList.push(toDo);
             localStorage.setItem("toDoList", JSON.stringify(toDoList));
             this.inputText.value = "";
-            this.msgEl.innerText="";
-            this.inputText.style.cssText="border-bottom: 1p solid black";
+            this.msgEl.innerText = "";
+            this.inputText.style.cssText = "border-bottom: 1p solid black";
             this.listToHtml(toDoList);
         }
         else this.notify(validToDo.msg, this.inputText);
@@ -98,8 +98,8 @@ class ToDoList{
 
         li.append(doneDiv);
 
-        spanEdit.addEventListener("click", ()=>this.delete(toDo.id));
-        spanDelete.addEventListener("click", ()=>this.delete(toDo.id));
+        spanEdit.addEventListener("click", () => this.delete(toDo.id));
+        spanDelete.addEventListener("click", () => this.delete(toDo.id));
         
         this.listEl.append(li);
     }
@@ -108,7 +108,7 @@ class ToDoList{
     }
     delete(id){
         let toDoList = this.getData();
-        const newToDos = toDoList.filter(item=>item.id!==id?true:false);
+        const newToDos = toDoList.filter(item => item.id!==id?true:false);
         localStorage.setItem("toDoList", JSON.stringify(newToDos));
         toDoList = this.getData();
         if(toDoList.length < 1 ) {
@@ -119,7 +119,7 @@ class ToDoList{
     }
     listToHtml(todos){
         this.listEl.innerHTML = "";
-        todos.forEach(toDo=>this.createTodo(toDo));
+        todos.forEach(toDo => this.createTodo(toDo));
     }
     use(){
         const toDoList = this.getData();//retrive initial data
@@ -127,7 +127,7 @@ class ToDoList{
         if(toDoList) this.listToHtml(toDoList);//render initial data
         else this.notify("To-do list is empty");
 
-        this.addButton.onclick = () =>this.add();//add todo
+        this.addButton.onclick = () => this.add();//add todo
     }
 }
 const inputText = document.querySelector("#to-do-input");
