@@ -60,44 +60,69 @@ class ToDoList{
             this.inputText.value = "";
             this.msgEl.innerText="";
             this.inputText.style.cssText="border-bottom: 1p solid black";
-            this.listEl.innerHTML = this.listToHtml(toDoList);
+            this.listToHtml(toDoList);
         }
         else this.notify(validToDo.msg, this.inputText);
     }
-    edit(){
 
-    }
-    delete(){
+    createTodo(toDo){
+        const li = document.createElement("li");
+        const navDiv = document.createElement("div");
+        const spanEdit = document.createElement("span");
+        const spanDelete = document.createElement("span");
+        const spanCheck = document.createElement("span");
+        const input = document.createElement("input");
+        const doneDiv = document.createElement("div");
 
+        navDiv.setAttribute("class", "edit-delete");
+
+        spanEdit.setAttribute("class", "edit-icon");
+        spanEdit.innerHTML = `<i class="fa fa-edit"></i>`;
+
+        spanDelete.setAttribute("class", "delete-icon");
+        spanDelete.innerHTML = `<i class="fa fa-trash-o"></i>`;
+
+
+        spanCheck.setAttribute("class", "check-done");
+        spanCheck.innerHTML = `<i class="fa fa-check-circle"></i>`;
+
+
+        navDiv.append(spanEdit);
+        navDiv.append(spanDelete);
+
+        li.append(navDiv);
+
+        input.setAttribute("value", toDo.name);
+        toDo.done?input.classList.add("to-do-done", "to-do-text"):input.setAttribute("class", "to-do-text");
+        input.setAttribute("disabled", true);
+
+       
+        li.append(input);
+
+        doneDiv.setAttribute("class", "done");
+        doneDiv.append(spanCheck);
+
+        li.append(doneDiv);
+
+        this.listEl.append(li);
     }
     listToHtml(todos){
-        let list = "";
-        todos.forEach(toDo=>{
-            list+=`
-                <li>
-                    <div class="edit-delete">
-                        <span class="edit-icon"><i class="fa fa-edit"></i></span>
-                        <span class="delete-icon"><i class="fa fa-trash-o"></i></span>
-                    </div>
-                <input class="to-do-text" value="${toDo.name}" disabled>
-                    <div class="done">
-                        <i class="fa fa-check-circle"></i>
-                    </div>
-                </li>`;
-        });
-        return list;
+        this.listEl.innerHTML = "";
+        todos.forEach(toDo=>this.createTodo(toDo));
     }
     use(){
-        const toDoList = this.getData();
-        if(toDoList) this.listEl.innerHTML = this.listToHtml(toDoList);
+        const toDoList = this.getData();//retrive initial data
+
+        if(toDoList) this.listToHtml(toDoList);//render initial data
         else this.notify("To-do list is empty");
-        this.addButton.onclick = ()=>this.add();
+
+        this.addButton.onclick = () =>this.add();//add todo
     }
 }
 const inputText = document.querySelector("#to-do-input");
 const addButton = document.querySelector("#to-do-add");
 const deleteButton = document.querySelectorAll(".delete-icon");
-const editButton = document.querySelector(".edit-icon");
+const editButton = document.querySelectorAll(".edit-icon");
 const msgEl = document.querySelector("#msg");
 const listEl = document.querySelector("#to-do-list > ul");
 
