@@ -17,7 +17,7 @@ class ToDoList{
             const toDoList = this.getData();
             if(toDoList){
                 for (let i = 0; i < toDoList.length; i++) {
-                    if(toDoList[i].name==name){
+                    if(toDoList[i].name === name){
                         answer = {};
                         answer.valid = false;
                         answer.msg = "To-do already exists";
@@ -41,8 +41,8 @@ class ToDoList{
         let toDoList = this.getData();
         const toDo = {};
         if(toDoList){
-            const lastId = toDoList[toDoList.length-1].id;
-            toDo.id = lastId+1;
+            const lastId = toDoList[toDoList.length - 1].id;
+            toDo.id = lastId + 1;
             toDo.name = this.inputText.value;
             toDo.done = false;
         }
@@ -58,8 +58,8 @@ class ToDoList{
             toDoList.push(toDo);
             localStorage.setItem("toDoList", JSON.stringify(toDoList));
             this.inputText.value = "";
-            this.msgEl.innerText="";
-            this.inputText.style.cssText="border-bottom: 1p solid black";
+            this.msgEl.innerText = "";
+            this.inputText.style.cssText = "border-bottom: 1p solid black";
             this.listToHtml(toDoList);
         }
         else this.notify(validToDo.msg, this.inputText);
@@ -114,14 +114,14 @@ class ToDoList{
 
         li.append(doneDiv);
 
-        spanCheck.addEventListener("click", ()=>this.setDone(toDo.id));
+        spanCheck.addEventListener("click", () => this.setDone(toDo.id));
 
 
         this.listEl.append(li);
     }
     listToHtml(todos){
         this.listEl.innerHTML = "";
-        todos.forEach(toDo=>this.createTodo(toDo));
+        todos.forEach(toDo => this.createTodo(toDo));
     }
     use(){
         const toDoList = this.getData();//retrive initial data
@@ -129,7 +129,7 @@ class ToDoList{
         if(toDoList) this.listToHtml(toDoList);//render initial data
         else this.notify("To-do list is empty");
 
-        this.addButton.onclick = () =>this.add();//add todo
+        this.addButton.onclick = () => this.add();//add todo
     }
 }
 const inputText = document.querySelector("#to-do-input");
