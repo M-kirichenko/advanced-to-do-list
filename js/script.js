@@ -11,16 +11,16 @@ class ToDoList{
         if(localStorage.toDoList) return JSON.parse(localStorage.toDoList);
         return false;
     }
-    validate(name){
+    validate(name, id=false){
         let answer = true;
         if(name.length >= 5){
             const toDoList = this.getData();
             if(toDoList){
                 for (let i = 0; i < toDoList.length; i++) {
-                    if(toDoList[i].name==name){
+                    if(toDoList[i].name === name&&toDoList[i].id!=id){
                         answer = {};
                         answer.valid = false;
-                        answer.msg = "To-do already exists";
+                        answer.msg = `To-do: ${name} already exists`;
                         break;
                     }
                 }
@@ -58,13 +58,77 @@ class ToDoList{
             toDoList.push(toDo);
             localStorage.setItem("toDoList", JSON.stringify(toDoList));
             this.inputText.value = "";
-            this.msgEl.innerText="";
-            this.inputText.style.cssText="border-bottom: 1p solid black";
+            this.msgEl.innerText = "";
+            this.inputText.style.removeAttribute("style");
             this.listToHtml(toDoList);
         }
         else this.notify(validToDo.msg, this.inputText);
     }
+    find(id){
+        const toDoList = this.getData();
+        let foundToDo = false;
+        for (let i = 0; i < toDoList.length; i++) {
+            if(toDoList[i].id === id){
+                foundToDo = toDoList[i];
+                break;
+            }
+        }
+        return foundToDo;
+    }
+    update(id, newVal, activeInput){
+        let answer = true;
+        const toDoList = this.getData(); 
+        for (let i = 0; i < toDoList.length; i++) {
+           if(toDoList[i].id === id){
+               const validToDo = this.validate(newVal, id);
+                if(validToDo === true) {
+                   toDoList[i].name = newVal;
+                   localStorage.setItem("toDoList", JSON.stringify(toDoList));
+                }
+                else {
+                    this.notify(validToDo.msg, activeInput);
+                    answer = false;
+                }
+                break;
+           }            
+        }
+        return answer;
+    }
+    edit(target, id){
+       
+        const toDoParent = target.parentElement.parentElement.parentElement;
+        const toDoInput = toDoParent.querySelector(".to-do-text");
+        const undoIcon = toDoParent.querySelector(".undo-icon");
+        toDoInput.disabled = false;
+        toDoInput.focus();
 
+        //function for update both: on change and on enter
+        const doUpdate = ()=>{
+            const updated = this.update(id, toDoInput.value, toDoInput);
+            if(updated) {
+                toDoInput.disabled = true;
+                this.msgEl.innerHTML = "";
+                toDoInput.removeAttribute("style");
+            }
+        }
+
+
+        toDoInput.addEventListener("keyup", ({keyCode}) => {
+            if (keyCode === 13) doUpdate();
+        });
+        toDoInput.addEventListener("change", () => {
+            doUpdate();
+        });
+        
+        undoIcon.addEventListener("click", (e)=>{
+            const foundToDo = this.find(id);
+            if(foundToDo) {
+                toDoInput.value = foundToDo.name;
+                this.msgEl.innerText = "";
+                toDoInput.removeAttribute("style");
+            }
+        });
+    }
     createTodo(toDo){
         const li = document.createElement("li");
         const navDiv = document.createElement("div");
@@ -73,7 +137,8 @@ class ToDoList{
         const spanCheck = document.createElement("span");
         const input = document.createElement("input");
         const doneDiv = document.createElement("div");
-
+        const spanUndo = document.createElement("span");
+        
         navDiv.setAttribute("class", "edit-delete");
 
         spanEdit.setAttribute("class", "edit-icon");
@@ -85,8 +150,7 @@ class ToDoList{
 
         spanCheck.setAttribute("class", "check-done");
         spanCheck.innerHTML = `<i class="fa fa-check-circle"></i>`;
-
-
+        
         navDiv.append(spanEdit);
         navDiv.append(spanDelete);
 
@@ -100,11 +164,18 @@ class ToDoList{
         li.append(input);
 
         doneDiv.setAttribute("class", "done");
+
+        spanUndo.setAttribute("class", "undo-icon");
+        spanUndo.innerHTML = `<i class="fa fa-undo" aria-hidden="true"></i>`;
+
+        doneDiv.append(spanUndo);
         doneDiv.append(spanCheck);
 
         li.append(doneDiv);
 
         this.listEl.append(li);
+
+        spanEdit.addEventListener("click", ({target}) => this.edit(target, toDo.id));
     }
     listToHtml(todos){
         this.listEl.innerHTML = "";
@@ -116,7 +187,7 @@ class ToDoList{
         if(toDoList) this.listToHtml(toDoList);//render initial data
         else this.notify("To-do list is empty");
 
-        this.addButton.onclick = () =>this.add();//add todo
+        this.addButton.onclick = () => this.add();//add todo
     }
 }
 const inputText = document.querySelector("#to-do-input");

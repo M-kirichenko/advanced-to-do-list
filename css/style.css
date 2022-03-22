@@ -51,7 +51,7 @@
     display: flex;
 }
 .to-do-text{
-    flex-basis: 80%;
+    flex-basis: 70%;
     text-align: center;
     border: none;
     outline: none;
@@ -63,20 +63,24 @@
     background: none;
     color: black;
 }
+.to-do-text:focus{
+    border-bottom: 1px solid black;
+}
 .edit-delete{
     flex-basis: 15%;
 }
-.edit-delete i {
-    margin-left: 2.5px;
+.edit-delete span, .done span{
+    margin-left: 5px;
+    margin-right: 5px;
 }
 .done{
     text-align: right;
-    flex-basis: 5%;
+    flex-basis: 15%;
 }
 .edit-delete, .done{
     font-size: 22px;
 }
-.edit-icon, .delete-icon, .done{
+.edit-icon, .delete-icon, .done, .undo-icon{
     cursor: pointer;
 }
 #msg {
