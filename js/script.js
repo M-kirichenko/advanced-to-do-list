@@ -11,6 +11,7 @@ class ToDoList{
         if(localStorage.toDoList) return JSON.parse(localStorage.toDoList);
         return false;
     }
+
     validate(name){
         let answer = true;
         if(name.length >= 5){
@@ -20,12 +21,13 @@ class ToDoList{
                     if(toDoList[i].name === name){
                         answer = {};
                         answer.valid = false;
-                        answer.msg = "To-do already exists";
+                        answer.msg = `To-do: ${name} already exists`;
                         break;
                     }
                 }
             }
         }
+
         else {
             answer = {};
             answer.valid = false;
@@ -34,36 +36,42 @@ class ToDoList{
         return answer;
     }
     notify(msg, elementRef){
-        elementRef?elementRef.style.cssText = "border-bottom: 1px solid red":false;
+        elementRef ? elementRef.style.cssText = "border-bottom: 1px solid red" : false;
         this.msgEl.innerText = msg;
     }
     add(){
         let toDoList = this.getData();
         const toDo = {};
+
         if(toDoList){
             const lastId = toDoList[toDoList.length - 1].id;
             toDo.id = lastId + 1;
             toDo.name = this.inputText.value;
             toDo.done = false;
         }
+
         else{
             toDoList = [];
             toDo.id = 1;
             toDo.name = this.inputText.value;
             toDo.done = false;
         }
+
         const validToDo = this.validate(toDo.name);
 
         if(validToDo === true) {
+            //if validation fails returns object with errors that's why i check it strictly
             toDoList.push(toDo);
             localStorage.setItem("toDoList", JSON.stringify(toDoList));
             this.inputText.value = "";
             this.msgEl.innerText = "";
-            this.inputText.style.cssText = "border-bottom: 1p solid black";
+            this.inputText.style.cssText = "border-bottom: 1px solid black";
             this.listToHtml(toDoList);
         }
+
         else this.notify(validToDo.msg, this.inputText);
     }
+
     createTodo(toDo){
         const li = document.createElement("li");
         const navDiv = document.createElement("div");
@@ -108,22 +116,26 @@ class ToDoList{
     }
     delete(id){
         let toDoList = this.getData();
-        const newToDos = toDoList.filter(item => item.id!==id?true:false);
+        const newToDos = toDoList.filter(item => item.id !== id ? true : false);
+
         localStorage.setItem("toDoList", JSON.stringify(newToDos));
         toDoList = this.getData();
+        
         if(toDoList.length < 1 ) {
             localStorage.removeItem("toDoList");
             this.notify("To-do list is empty");
         }
+
         this.listToHtml(toDoList);
     }
+
     listToHtml(todos){
         this.listEl.innerHTML = "";
         todos.forEach(toDo => this.createTodo(toDo));
     }
+
     use(){
         const toDoList = this.getData();//retrive initial data
-
         if(toDoList) this.listToHtml(toDoList);//render initial data
         else this.notify("To-do list is empty");
 
