@@ -57,7 +57,7 @@
 }
 
 .to-do-text {
-    flex-basis: 75%;
+    flex-basis: 70%;
     text-align: center;
     border: none;
     outline: none;
@@ -70,12 +70,17 @@
     color: black;
 }
 
+.to-do-text:focus {
+    border-bottom: 1px solid black;
+}
+
 .edit-delete {
     flex-basis: 15%;
 }
 
-.edit-delete i, .done i{
-    margin-left: 7.5px;
+.edit-delete span, .done span {
+    margin-left: 5px;
+    margin-right: 5px;
 }
 
 .done {
@@ -87,7 +92,7 @@
     font-size: 22px;
 }
 
-.edit-icon, .delete-icon, .done {
+.edit-icon, .delete-icon, .done, .undo-icon {
     cursor: pointer;
 }
 
