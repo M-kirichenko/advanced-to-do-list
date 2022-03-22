@@ -37,10 +37,12 @@ class ToDoList{
         
         return answer;
     }
+
     notify(msg, elementRef){
         elementRef ? elementRef.style.cssText = "border-bottom: 1px solid red" : false;
         this.msgEl.innerText = msg;
     }
+
     add(){
         let toDoList = this.getData();
         const toDo = {};
@@ -61,8 +63,7 @@ class ToDoList{
 
         const validToDo = this.validate(toDo.name);
 
-        if(validToDo === true) {
-            //if validation fails returns object with errors that's why i check it strictly
+        if(validToDo === true){
             toDoList.push(toDo);
             localStorage.setItem("toDoList", JSON.stringify(toDoList));
             this.inputText.value = "";
@@ -74,6 +75,16 @@ class ToDoList{
         else this.notify(validToDo.msg, this.inputText);
     }
 
+    setDone(id){
+        const updateTodos = this.getData();
+        const foundInd = updateTodos.findIndex(toDo => toDo.id == id);
+
+        if(foundInd > -1) updateTodos[foundInd].done = !updateTodos[foundInd].done; 
+
+        localStorage.setItem("toDoList", JSON.stringify(updateTodos));
+        this.listToHtml(updateTodos);
+    }
+
     createTodo(toDo){
         const li = document.createElement("li");
         const navDiv = document.createElement("div");
@@ -81,12 +92,18 @@ class ToDoList{
         const spanDelete = document.createElement("span");
         const input = document.createElement("input");
         const doneDiv = document.createElement("div");
+        const spanCheck = document.createElement("span");
+        const spanUndo = document.createElement("span");
 
         navDiv.setAttribute("class", "edit-delete");
 
         spanEdit.setAttribute("class", "edit-icon");
         spanEdit.innerHTML = `<i class="fa fa-edit"></i>`;
+        
+        spanCheck.setAttribute("class", "check-done");
+        spanCheck.innerHTML = `<i class="fa fa-check-circle"></i>`;
 
+        
         spanDelete.setAttribute("class", "delete-icon");
         spanDelete.innerHTML = `<i class="fa fa-trash-o"></i>`;
 
@@ -98,24 +115,32 @@ class ToDoList{
 
         input.setAttribute("class", "to-do-text");
         input.setAttribute("value", toDo.name);
+
+        toDo.done ? input.classList.add("to-do-done", "to-do-text") : input.setAttribute("class", "to-do-text");
+
         input.setAttribute("disabled", true);
 
        
         li.append(input);
 
         doneDiv.setAttribute("class", "done");
-        doneDiv.innerHTML = ` <i class="fa fa-check-circle"></i>`;
+
+        spanUndo.setAttribute("class", "undo-icon");
+        spanUndo.innerHTML = `<i class="fa fa-undo" aria-hidden="true"></i>`;
+
+        
+        doneDiv.append(spanUndo);
+        doneDiv.append(spanCheck);
 
         li.append(doneDiv);
+        spanCheck.addEventListener("click", () => this.setDone(toDo.id));
 
-        spanEdit.addEventListener("click", () => this.delete(toDo.id));
+
         spanDelete.addEventListener("click", () => this.delete(toDo.id));
         
         this.listEl.append(li);
     }
-    edit(){
 
-    }
     delete(id){
         let toDoList = this.getData();
         const newToDos = toDoList.filter(item => item.id !== id ? true : false);
@@ -131,8 +156,10 @@ class ToDoList{
         this.listToHtml(toDoList);
     }
 
+
     listToHtml(todos){
         this.listEl.innerHTML = "";
+        todos.sort((a, b) => a.done > b.done ? 1 : -1);
         todos.forEach(toDo => this.createTodo(toDo));
     }
 
