@@ -121,6 +121,7 @@ class ToDoList{
     }
     listToHtml(todos){
         this.listEl.innerHTML = "";
+        todos.sort((a, b) => a.done > b.done ? 1 : -1);
         todos.forEach(toDo => this.createTodo(toDo));
     }
     use(){
