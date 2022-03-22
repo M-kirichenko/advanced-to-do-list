@@ -196,15 +196,18 @@ class ToDoList{
         doneDiv.append(spanCheck);
 
         li.append(doneDiv);
-        spanCheck.addEventListener("click", () => this.setDone(toDo.id));
-
-
+        spanCheck.addEventListener("click", ({target}) => {
+            let inp = target.parentElement.parentElement.parentElement;
+            inp = inp.querySelector(".to-do-text");
+            if(!inp.disabled) this.notify("finish editing first", inp);
+            else this.setDone(toDo.id);
+        });
         spanDelete.addEventListener("click", () => this.delete(toDo.id));
         
         this.listEl.append(li);
 
         spanEdit.addEventListener("click", ({target}) => {
-            this.edit(target, toDo.id)
+            if(!toDo.done) this.edit(target, toDo.id)
         });
     }
 
