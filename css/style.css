@@ -1,20 +1,21 @@
-*{
+* {
     margin: 0px;
     padding: 0px;
 }
 
-#to-do-list{
+#to-do-list {
     width: 500px;
     min-height: 800px;
     margin: auto;
     margin-top: 100px;
-    /* border: 1px solid black; */
 }
-#to-do-add-wrapper{
+
+#to-do-add-wrapper {
     display: flex;
     justify-content: space-between;
 }
-#to-do-input{
+
+#to-do-input {
     flex-basis: 80%;
     height: 36px;
     border: none;
@@ -22,7 +23,8 @@
     border-bottom: 1px solid black;
     padding: 0px;
 }
-#to-do-add{
+
+#to-do-add {
     flex-basis: 17%;
     height: 37px;
     border:none;
@@ -31,16 +33,19 @@
     color: white;
     transition: 1s;
 }
-#to-do-add:hover{
+
+#to-do-add:hover {
     background-color: transparent;
     border:1px solid black;
     color:black;
 }
-#to-do-list ul{
+
+#to-do-list ul {
     list-style-type: none;
     margin-top: 50px;
 }
-#to-do-list li{
+
+#to-do-list li {
     width: 100%;
     border: 1px solid black;
     height: 50px;
@@ -50,7 +55,8 @@
     padding-bottom: 10px;
     display: flex;
 }
-.to-do-text{
+
+.to-do-text {
     flex-basis: 80%;
     text-align: center;
     border: none;
@@ -59,31 +65,37 @@
     margin-right: 10px;
 }
 
-.to-do-text:disabled{
+.to-do-text:disabled {
     background: none;
     color: black;
 }
-.edit-delete{
+
+.edit-delete {
     flex-basis: 15%;
 }
 .edit-delete i {
     margin-left: 2.5px;
 }
-.done{
+
+.done {
     text-align: right;
     flex-basis: 5%;
 }
-.edit-delete, .done{
+
+.edit-delete, .done {
     font-size: 22px;
 }
-.edit-icon, .delete-icon, .done{
+
+.edit-icon, .delete-icon, .done {
     cursor: pointer;
 }
+
 #msg {
     height: 25px;
     text-align: center;
     color:red;
 }
-.to-do-done{
+
+.to-do-done {
     text-decoration: line-through;
 }

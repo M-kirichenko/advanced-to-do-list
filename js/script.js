@@ -7,10 +7,12 @@ class ToDoList{
         this.inputText = inputText;
         this.listEl = listEl;
     }
+
     getData(){
         if(localStorage.toDoList) return JSON.parse(localStorage.toDoList);
         return false;
     }
+
     validate(name){
         let answer = true;
         if(name.length >= 5){
@@ -20,7 +22,7 @@ class ToDoList{
                     if(toDoList[i].name === name){
                         answer = {};
                         answer.valid = false;
-                        answer.msg = "To-do already exists";
+                        answer.msg = `To-do: ${name} already exists`;
                         break;
                     }
                 }
@@ -33,19 +35,23 @@ class ToDoList{
         }
         return answer;
     }
+
     notify(msg, elementRef){
-        elementRef?elementRef.style.cssText = "border-bottom: 1px solid red":false;
+        elementRef ? elementRef.style.cssText = "border-bottom: 1px solid red" : false;
         this.msgEl.innerText = msg;
     }
+
     add(){
         let toDoList = this.getData();
         const toDo = {};
+
         if(toDoList){
             const lastId = toDoList[toDoList.length - 1].id;
             toDo.id = lastId + 1;
             toDo.name = this.inputText.value;
             toDo.done = false;
         }
+
         else{
             toDoList = [];
             toDo.id = 1;
@@ -54,27 +60,28 @@ class ToDoList{
         }
         const validToDo = this.validate(toDo.name);
 
-        if(validToDo === true) {
+        if(validToDo === true){
             toDoList.push(toDo);
             localStorage.setItem("toDoList", JSON.stringify(toDoList));
             this.inputText.value = "";
             this.msgEl.innerText = "";
-            this.inputText.style.cssText = "border-bottom: 1p solid black";
+            this.inputText.style.cssText = "border-bottom: 1px solid black";
             this.listToHtml(toDoList);
         }
+
         else this.notify(validToDo.msg, this.inputText);
     }
+
     setDone(id){
         const updateTodos = this.getData();
-        for(let i=0; i<updateTodos.length; i++){
-            if(updateTodos[i].id === id) {
-                updateTodos[i].done = !updateTodos[i].done; 
-                break;
-            }
-        }
+        const foundInd = updateTodos.findIndex(toDo => toDo.id == id);
+
+        if(foundInd > -1) updateTodos[foundInd].done = !updateTodos[foundInd].done; 
+
         localStorage.setItem("toDoList", JSON.stringify(updateTodos));
         this.listToHtml(updateTodos);
     }
+
     createTodo(toDo){
         const li = document.createElement("li");
         const navDiv = document.createElement("div");
@@ -103,7 +110,7 @@ class ToDoList{
         li.append(navDiv);
 
         input.setAttribute("value", toDo.name);
-        toDo.done?input.classList.add("to-do-done", "to-do-text"):input.setAttribute("class", "to-do-text");
+        toDo.done ? input.classList.add("to-do-done", "to-do-text") : input.setAttribute("class", "to-do-text");
         input.setAttribute("disabled", true);
 
        
@@ -113,17 +120,18 @@ class ToDoList{
         doneDiv.append(spanCheck);
 
         li.append(doneDiv);
-
         spanCheck.addEventListener("click", () => this.setDone(toDo.id));
 
 
         this.listEl.append(li);
     }
+
     listToHtml(todos){
         this.listEl.innerHTML = "";
         todos.sort((a, b) => a.done > b.done ? 1 : -1);
         todos.forEach(toDo => this.createTodo(toDo));
     }
+
     use(){
         const toDoList = this.getData();//retrive initial data
 
