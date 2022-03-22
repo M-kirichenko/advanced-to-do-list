@@ -7,61 +7,70 @@ class ToDoList{
         this.inputText = inputText;
         this.listEl = listEl;
     }
+
     getData(){
         if(localStorage.toDoList) return JSON.parse(localStorage.toDoList);
         return false;
     }
+
     validate(name){
         let answer = true;
         if(name.length >= 5){
             const toDoList = this.getData();
             if(toDoList){
                 for (let i = 0; i < toDoList.length; i++) {
-                    if(toDoList[i].name==name){
+                    if(toDoList[i].name === name){
                         answer = {};
                         answer.valid = false;
-                        answer.msg = "To-do already exists";
+                        answer.msg = `To-do: ${name} already exists`;
                         break;
                     }
                 }
             }
         }
+
         else {
             answer = {};
             answer.valid = false;
             answer.msg = "To-do must have at least 5 symbols length";
         }
+        
         return answer;
     }
     notify(msg, elementRef){
-        elementRef?elementRef.style.cssText = "border-bottom: 1px solid red":false;
+        elementRef ? elementRef.style.cssText = "border-bottom: 1px solid red" : false;
         this.msgEl.innerText = msg;
     }
     add(){
         let toDoList = this.getData();
         const toDo = {};
+
         if(toDoList){
-            const lastId = toDoList[toDoList.length-1].id;
-            toDo.id = lastId+1;
+            const lastId = toDoList[toDoList.length - 1].id;
+            toDo.id = lastId + 1;
             toDo.name = this.inputText.value;
             toDo.done = false;
         }
+
         else{
             toDoList = [];
             toDo.id = 1;
             toDo.name = this.inputText.value;
             toDo.done = false;
         }
+
         const validToDo = this.validate(toDo.name);
 
         if(validToDo === true) {
+            //if validation fails returns object with errors that's why i check it strictly
             toDoList.push(toDo);
             localStorage.setItem("toDoList", JSON.stringify(toDoList));
             this.inputText.value = "";
-            this.msgEl.innerText="";
-            this.inputText.style.cssText="border-bottom: 1p solid black";
+            this.msgEl.innerText = "";
+            this.inputText.style.cssText = "border-bottom: 1px solid black";
             this.listToHtml(toDoList);
         }
+
         else this.notify(validToDo.msg, this.inputText);
     }
 
@@ -70,7 +79,6 @@ class ToDoList{
         const navDiv = document.createElement("div");
         const spanEdit = document.createElement("span");
         const spanDelete = document.createElement("span");
-        const spanCheck = document.createElement("span");
         const input = document.createElement("input");
         const doneDiv = document.createElement("div");
 
@@ -83,40 +91,56 @@ class ToDoList{
         spanDelete.innerHTML = `<i class="fa fa-trash-o"></i>`;
 
 
-        spanCheck.setAttribute("class", "check-done");
-        spanCheck.innerHTML = `<i class="fa fa-check-circle"></i>`;
-
-
         navDiv.append(spanEdit);
         navDiv.append(spanDelete);
 
         li.append(navDiv);
 
+        input.setAttribute("class", "to-do-text");
         input.setAttribute("value", toDo.name);
-        toDo.done?input.classList.add("to-do-done", "to-do-text"):input.setAttribute("class", "to-do-text");
         input.setAttribute("disabled", true);
 
        
         li.append(input);
 
         doneDiv.setAttribute("class", "done");
-        doneDiv.append(spanCheck);
+        doneDiv.innerHTML = ` <i class="fa fa-check-circle"></i>`;
 
         li.append(doneDiv);
 
+        spanEdit.addEventListener("click", () => this.delete(toDo.id));
+        spanDelete.addEventListener("click", () => this.delete(toDo.id));
+        
         this.listEl.append(li);
     }
+    edit(){
+
+    }
+    delete(id){
+        let toDoList = this.getData();
+        const newToDos = toDoList.filter(item => item.id !== id ? true : false);
+
+        localStorage.setItem("toDoList", JSON.stringify(newToDos));
+        toDoList = this.getData();
+        
+        if(toDoList.length < 1 ) {
+            localStorage.removeItem("toDoList");
+            this.notify("To-do list is empty");
+        }
+
+        this.listToHtml(toDoList);
+    }
+
     listToHtml(todos){
         this.listEl.innerHTML = "";
-        todos.forEach(toDo=>this.createTodo(toDo));
+        todos.forEach(toDo => this.createTodo(toDo));
     }
+
     use(){
         const toDoList = this.getData();//retrive initial data
-
         if(toDoList) this.listToHtml(toDoList);//render initial data
         else this.notify("To-do list is empty");
-
-        this.addButton.onclick = () =>this.add();//add todo
+        this.addButton.onclick = () => this.add();//add todo
     }
 }
 const inputText = document.querySelector("#to-do-input");
