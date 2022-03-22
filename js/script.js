@@ -59,7 +59,7 @@ class ToDoList{
             localStorage.setItem("toDoList", JSON.stringify(toDoList));
             this.inputText.value = "";
             this.msgEl.innerText = "";
-            this.inputText.style.removeAttribute("style");
+            this.inputText.removeAttribute("style");
             this.listToHtml(toDoList);
         }
         else this.notify(validToDo.msg, this.inputText);
@@ -102,31 +102,28 @@ class ToDoList{
         toDoInput.disabled = false;
         toDoInput.focus();
 
-        //function for update both: on change and on enter
-        const doUpdate = ()=>{
-            const updated = this.update(id, toDoInput.value, toDoInput);
-            if(updated) {
-                toDoInput.disabled = true;
-                this.msgEl.innerHTML = "";
-                toDoInput.removeAttribute("style");
-            }
-        }
-
-
         toDoInput.addEventListener("keyup", ({keyCode}) => {
-            if (keyCode === 13) doUpdate();
+            this.msgEl.innerText = "";
+            this.inputText.removeAttribute("style");
+            this.inputText.value = "";
+            if (keyCode === 13) {
+                const updated = this.update(id, toDoInput.value, toDoInput);
+                if(updated) {
+                    toDoInput.disabled = true;
+                    this.msgEl.innerHTML = "";
+                    toDoInput.removeAttribute("style");
+                }
+            }
         });
-        toDoInput.addEventListener("change", () => {
-            doUpdate();
-        });
-        
-        undoIcon.addEventListener("click", (e)=>{
+
+        undoIcon.addEventListener("click", ()=>{
+            this.msgEl.innerText = "";
             const foundToDo = this.find(id);
             if(foundToDo) {
                 toDoInput.value = foundToDo.name;
-                this.msgEl.innerText = "";
                 toDoInput.removeAttribute("style");
             }
+            toDoInput.disabled = true;
         });
     }
     createTodo(toDo){
@@ -175,7 +172,13 @@ class ToDoList{
 
         this.listEl.append(li);
 
-        spanEdit.addEventListener("click", ({target}) => this.edit(target, toDo.id));
+        spanEdit.addEventListener("click", ({target}) => {
+            // const toDoText = document.querySelectorAll(".to-do-text");
+            // for (let i = 0; i < toDoText.length; i++) {
+                
+            // }z
+            this.edit(target, toDo.id)
+        });
     }
     listToHtml(todos){
         this.listEl.innerHTML = "";
