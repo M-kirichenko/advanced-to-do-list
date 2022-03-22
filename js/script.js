@@ -173,10 +173,6 @@ class ToDoList{
         this.listEl.append(li);
 
         spanEdit.addEventListener("click", ({target}) => {
-            // const toDoText = document.querySelectorAll(".to-do-text");
-            // for (let i = 0; i < toDoText.length; i++) {
-                
-            // }z
             this.edit(target, toDo.id)
         });
     }
