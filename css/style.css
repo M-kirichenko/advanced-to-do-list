@@ -27,7 +27,7 @@
 #to-do-add {
   flex-basis: 17%;
   height: 37px;
-  border:none;
+  border: none;
   cursor: pointer;
   background-color: black;
   color: white;
@@ -36,8 +36,8 @@
 
 #to-do-add:hover {
   background-color: transparent;
-  border:1px solid black;
-  color:black;
+  border: 1px solid black;
+  color: black;
 }
 
 #to-do-list ul {
@@ -61,8 +61,7 @@
   text-align: center;
   border: none;
   outline: none;
-  margin-left: 10px;
-  margin-right: 10px;
+  margin: 0 10px;
 }
 
 .to-do-text:disabled {
@@ -93,7 +92,7 @@
 #msg {
   height: 25px;
   text-align: center;
-  color:red;
+  color: red;
 }
 
 .to-do-done {

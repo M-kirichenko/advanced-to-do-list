@@ -1,5 +1,5 @@
-class ToDoList{
-  constructor(addButton, deleteButton, editButton, msgEl, inputText, listEl){
+class ToDoList {
+  constructor(addButton, deleteButton, editButton, msgEl, inputText, listEl) {
     this.addButton = addButton;
     this.deleteButton = deleteButton;
     this.editButton = editButton;
@@ -10,18 +10,15 @@ class ToDoList{
 
   getData() {
     if(localStorage.toDoList) return JSON.parse(localStorage.toDoList);
-
     return false;
   }
 
   validate(name) {
     let answer = true;
-    if(name.length >= 5){
+    if(name.length >= 5) {
       const toDoList = this.getData();
       if(toDoList) {
-
         for (let i = 0; i < toDoList.length; i++) {
-
           if(toDoList[i].name === name) {
             answer = {};
             answer.valid = false;
@@ -35,6 +32,7 @@ class ToDoList{
       answer.valid = false;
       answer.msg = "To-do must have at least 5 symbols length";
     }
+
     return answer;
   }
 
@@ -61,16 +59,14 @@ class ToDoList{
 
     const validToDo = this.validate(toDo.name);
 
-    if(validToDo === true){
+    if(validToDo === true) {
       toDoList.push(toDo);
       localStorage.setItem("toDoList", JSON.stringify(toDoList));
       this.inputText.value = "";
       this.msgEl.innerText = "";
       this.inputText.style.cssText = "border-bottom: 1px solid black";
       this.listToHtml(toDoList);
-    }
-
-    else this.notify(validToDo.msg, this.inputText);
+    } else this.notify(validToDo.msg, this.inputText);
   }
 
   setDone(id) {
@@ -116,18 +112,13 @@ class ToDoList{
     doneDiv.setAttribute("class", "done");
     doneDiv.append(spanCheck);
     li.append(doneDiv);
-
     spanCheck.addEventListener("click", () => this.setDone(toDo.id));
-
-
     this.listEl.append(li);
   }
 
   listToHtml(todos) {
     this.listEl.innerHTML = "";
-
     todos.sort( (a, b) => a.done > b.done ? 1 : -1 );
-
     todos.forEach( toDo => this.createTodo(toDo) );
   }
 
