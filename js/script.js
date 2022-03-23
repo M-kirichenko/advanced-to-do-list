@@ -109,7 +109,7 @@ class ToDoList {
       }
     }
 
-      return answer;
+    return answer;
   }
 
   edit(target, id) {
@@ -132,7 +132,6 @@ class ToDoList {
           toDoInput.removeAttribute("style");
         }
       }
-
     });
 
     undoIcon.addEventListener("click", () => {
@@ -188,14 +187,12 @@ class ToDoList {
     spanEdit.addEventListener("click", ({target}) => {
       this.edit(target, toDo.id)
     });
-
   }
 
   listToHtml(todos) {
     this.listEl.innerHTML = "";
 
     todos.forEach( toDo => this.createTodo(toDo) );
-    
   }
 
   use() {
