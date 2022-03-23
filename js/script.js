@@ -1,5 +1,5 @@
-class ToDoList{
-  constructor(addButton, deleteButton, editButton, msgEl, inputText, listEl){
+class ToDoList {
+  constructor(addButton, deleteButton, editButton, msgEl, inputText, listEl) {
     this.addButton = addButton;
     this.deleteButton = deleteButton;
     this.editButton = editButton;
@@ -10,7 +10,6 @@ class ToDoList{
 
   getData() {
     if(localStorage.toDoList) return JSON.parse(localStorage.toDoList);
-
     return false;
   }
 
@@ -38,12 +37,12 @@ class ToDoList{
     return answer;
   }
 
-  notify(msg, elementRef){
+  notify(msg, elementRef) {
     elementRef ? elementRef.style.cssText = "border-bottom: 1px solid red" : false;
     this.msgEl.innerText = msg;
   }
 
-  add(){
+  add() {
     let toDoList = this.getData();
     const toDo = {};
 
@@ -69,7 +68,9 @@ class ToDoList{
       this.msgEl.innerText = "";
       this.inputText.style.cssText = "border-bottom: 1px solid black";
       this.listToHtml(toDoList);
-    } else this.notify(validToDo.msg, this.inputText);
+    } else {
+      this.notify(validToDo.msg, this.inputText);
+    }
   }
 
   createTodo(toDo) {
@@ -95,10 +96,8 @@ class ToDoList{
     doneDiv.innerHTML = ` <i class="fa fa-check-circle"></i>`;
     li.append(doneDiv);
 
-    spanEdit.addEventListener("click", () => this.delete(toDo.id));
-
+    spanEdit.addEventListener("click", ({target}) => this.edit(target, toDo.id));
     spanDelete.addEventListener("click", () => this.delete(toDo.id));
-        
     this.listEl.append(li);
   }
 
@@ -106,11 +105,9 @@ class ToDoList{
 
   }
 
-  delete(id){
+  delete(id) {
     const toDoList = this.getData();
-    
-    const newToDos = toDoList.filter( item => item.id !== id ? true : false );
-
+    const newToDos = toDoList.filter( item => item.id !== id );
     localStorage.setItem("toDoList", JSON.stringify(newToDos));
        
     if(newToDos.length < 1 ) {
@@ -121,7 +118,7 @@ class ToDoList{
     this.listToHtml(newToDos);
   }
 
-  listToHtml(todos){
+  listToHtml(todos) {
     this.listEl.innerHTML = "";
     todos.forEach( toDo => this.createTodo(toDo) );
   }
