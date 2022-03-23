@@ -108,8 +108,9 @@ class ToDoList{
 
   delete(id){
     const toDoList = this.getData();
-    const newToDos = toDoList.filter( item => item.id !== id ? true : false );
     
+    const newToDos = toDoList.filter( item => item.id !== id ? true : false );
+
     localStorage.setItem("toDoList", JSON.stringify(newToDos));
        
     if(newToDos.length < 1 ) {
