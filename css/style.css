@@ -1,99 +1,99 @@
 * {
-    margin: 0px;
-    padding: 0px;
+  margin: 0px;
+  padding: 0px;
 }
 
 #to-do-list {
-    width: 500px;
-    min-height: 800px;
-    margin: auto;
-    margin-top: 100px;
+  width: 500px;
+  min-height: 800px;
+  margin: auto;
+  margin-top: 100px;
 }
 
 #to-do-add-wrapper {
-    display: flex;
-    justify-content: space-between;
+  display: flex;
+  justify-content: space-between;
 }
 
 #to-do-input {
-    flex-basis: 80%;
-    height: 36px;
-    border: none;
-    outline: none;
-    border-bottom: 1px solid black;
-    padding: 0px;
+  flex-basis: 80%;
+  height: 36px;
+  border: none;
+  outline: none;
+  border-bottom: 1px solid black;
+  padding: 0px;
 }
 
 #to-do-add {
-    flex-basis: 17%;
-    height: 37px;
-    border:none;
-    cursor: pointer;
-    background-color: black;
-    color: white;
-    transition: 1s;
+  flex-basis: 17%;
+  height: 37px;
+  border:none;
+  cursor: pointer;
+  background-color: black;
+  color: white;
+  transition: 1s;
 }
 
 #to-do-add:hover {
-    background-color: transparent;
-    border:1px solid black;
-    color:black;
+  background-color: transparent;
+  border:1px solid black;
+  color:black;
 }
 
 #to-do-list ul {
-    list-style-type: none;
-    margin-top: 50px;
+  list-style-type: none;
+  margin-top: 50px;
 }
 
 #to-do-list li {
-    width: 100%;
-    border: 1px solid black;
-    height: 50px;
-    box-sizing: border-box;
-    padding: 15px;
-    margin-top: 10px;
-    padding-bottom: 10px;
-    display: flex;
+  width: 100%;
+  border: 1px solid black;
+  height: 50px;
+  box-sizing: border-box;
+  padding: 15px;
+  margin-top: 10px;
+  padding-bottom: 10px;
+  display: flex;
 }
 
 .to-do-text {
-    flex-basis: 80%;
-    text-align: center;
-    border: none;
-    outline: none;
-    margin-left: 10px;
-    margin-right: 10px;
+  flex-basis: 80%;
+  text-align: center;
+  border: none;
+  outline: none;
+  margin-left: 10px;
+  margin-right: 10px;
 }
 
 .to-do-text:disabled {
-    background: none;
-    color: black;
+  background: none;
+  color: black;
 }
 
 .edit-delete {
     flex-basis: 15%;
 }
 .edit-delete i {
-    margin-left: 2.5px;
+  margin-left: 2.5px;
 }
 
 .done {
-    text-align: right;
-    flex-basis: 5%;
+  text-align: right;
+  flex-basis: 5%;
 }
 
 .edit-delete, .done {
-    font-size: 22px;
+  font-size: 22px;
 }
 
 .edit-icon, .delete-icon, .done {
-    cursor: pointer;
+  cursor: pointer;
 }
 
 #msg {
-    height: 25px;
-    text-align: center;
-    color:red;
+  height: 25px;
+  text-align: center;
+  color:red;
 }
 
 .to-do-done {
