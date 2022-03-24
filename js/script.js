@@ -197,7 +197,21 @@ class ToDoList {
     this.listEl.append(li);
 
     spanEdit.addEventListener("click", ({target}) => this.edit(target, toDo.id));
+    spanDelete.addEventListener("click", () => this.delete(toDo.id));
     spanCheck.addEventListener("click", () => this.setDone(toDo.id));
+  }
+
+  delete(id) {
+    const toDoList = this.getData();
+    const newToDos = toDoList.filter( item => item.id !== id );
+    localStorage.setItem("toDoList", JSON.stringify(newToDos));
+       
+    if(newToDos.length < 1 ) {
+      localStorage.removeItem("toDoList");
+      this.notify("To-do list is empty");
+    }
+
+    this.listToHtml(newToDos);
   }
 
   listToHtml(todos) {

@@ -1,6 +1,6 @@
-*{
-    margin: 0px;
-    padding: 0px;
+* {
+  margin: 0px;
+  padding: 0px;
 }
 
 #to-do-list{
@@ -97,7 +97,7 @@
 }
 
 #msg {
-    height: 25px;
-    text-align: center;
-    color:red;
+  height: 25px;
+  text-align: center;
+  color: red;
 }
