@@ -45,7 +45,7 @@ class ToDoList {
     }
 
       return answer;
-    }
+  }
 
   notify(msg, elementRef) {
     elementRef ? elementRef.style.cssText = "border-bottom: 1px solid red" : false;
@@ -80,6 +80,18 @@ class ToDoList {
     } else {
       this.notify(validToDo.msg, this.inputText);
     }
+  }
+  
+  setDone(id) {
+    const updateTodos = this.getData();
+    const foundInd = updateTodos.findIndex(toDo => toDo.id == id);
+
+    if(foundInd > -1) {
+      updateTodos[foundInd].done = !updateTodos[foundInd].done;
+    }
+
+    localStorage.setItem("toDoList", JSON.stringify(updateTodos));
+    this.listToHtml(updateTodos);
   }
 
   find(id) {
@@ -184,14 +196,12 @@ class ToDoList {
     li.append(doneDiv);
     this.listEl.append(li);
 
-    spanEdit.addEventListener("click", ({target}) => {
-      this.edit(target, toDo.id)
-    });
+    spanEdit.addEventListener("click", ({target}) => this.edit(target, toDo.id));
+    spanCheck.addEventListener("click", () => this.setDone(toDo.id));
   }
 
   listToHtml(todos) {
     this.listEl.innerHTML = "";
-
     todos.forEach( toDo => this.createTodo(toDo) );
   }
 
