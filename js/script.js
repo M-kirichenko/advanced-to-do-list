@@ -9,10 +9,7 @@ class ToDoList {
   }
 
   getData() {
-    if(localStorage.toDoList) 
-
-    return JSON.parse(localStorage.toDoList);
-
+    if(localStorage.toDoList) return JSON.parse(localStorage.toDoList);
     return false;
   }
 
@@ -44,7 +41,7 @@ class ToDoList {
         answer.msg = "To-do must have at least 5 symbols length";
     }
 
-      return answer;
+    return answer;
   }
 
   notify(msg, elementRef) {
@@ -185,7 +182,7 @@ class ToDoList {
     } else {
       input.setAttribute("class", "to-do-text");
     }
-
+    
     input.setAttribute("disabled", true);
     li.append(input);
     doneDiv.setAttribute("class", "done");
@@ -196,9 +193,19 @@ class ToDoList {
     li.append(doneDiv);
     this.listEl.append(li);
 
-    spanEdit.addEventListener("click", ({target}) => this.edit(target, toDo.id));
+    spanCheck.addEventListener("click", ({target}) => {
+        let inp = target.parentElement.parentElement.parentElement;
+        inp = inp.querySelector(".to-do-text");
+
+        if(!inp.disabled) this.notify("finish editing first", inp);
+        else this.setDone(toDo.id);
+    });
+
     spanDelete.addEventListener("click", () => this.delete(toDo.id));
-    spanCheck.addEventListener("click", () => this.setDone(toDo.id));
+
+    spanEdit.addEventListener("click", ({target}) => {
+        if(!toDo.done) this.edit(target, toDo.id)
+    });
   }
 
   delete(id) {
@@ -216,7 +223,8 @@ class ToDoList {
 
   listToHtml(todos) {
     this.listEl.innerHTML = "";
-    todos.forEach( toDo => this.createTodo(toDo) );
+    todos.sort((a, b) => a.done > b.done ? 1 : -1);
+    todos.forEach(toDo => this.createTodo(toDo));
   }
 
   use() {
