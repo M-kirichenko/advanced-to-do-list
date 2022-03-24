@@ -3,7 +3,7 @@
   padding: 0px;
 }
 
-#to-do-list{
+#to-do-list {
     width: 500px;
     min-height: 800px;
     margin: auto;
@@ -100,4 +100,8 @@
   height: 25px;
   text-align: center;
   color: red;
+}
+
+.to-do-done {
+  text-decoration: line-through;
 }
