@@ -1,4 +1,5 @@
 class ToDoList {
+  _api_base = "http://localhost:8000";
   constructor(addButton, deleteButton, editButton, msgEl, inputText, listEl) {
     this.addButton = addButton;
     this.deleteButton = deleteButton;
@@ -8,40 +9,33 @@ class ToDoList {
     this.listEl = listEl;
   }
 
-  getData() {
-    if(localStorage.toDoList) return JSON.parse(localStorage.toDoList);
-    return false;
+  async getData() {
+     return await fetch(`${this._api_base}/allTasks`)
+    .then(response => response.json());
   }
+  
+  validate(text, id = false) {
 
-  validate(name, id = false) {
-    let answer = true;
-
-    if(name.length >= 5) {
+    if(text.length >= 5) {
       const toDoList = this.getData();
 
-      if(toDoList) {
-        for (let i = 0; i < toDoList.length; i++) {
-
-          if(
-              toDoList[i].name === name && 
-              toDoList[i].id != id
-            ) {
-              answer = {};
-              answer.valid = false;
-              answer.msg = `To-do: ${name} already exists`;
-              break;
+      return toDoList.then(({data}) => {
+        if(data.length) {
+          for (let i = 0; i < data.length; i++) {
+            if(
+                data[i].text === text && 
+                data[i].id != id
+              ) {
+                return `To-do: ${text} already exists`;
+            }
           }
-
         }
-      }
+        return true;
+      });
 
     } else {
-        answer = {};
-        answer.valid = false;
-        answer.msg = "To-do must have at least 5 symbols length";
+      return "To-do must have at least 5 symbols length";
     }
-
-    return answer;
   }
 
   notify(msg, elementRef) {
@@ -49,76 +43,74 @@ class ToDoList {
     this.msgEl.innerText = msg;
   }
 
-  add() {
-    let toDoList = this.getData();
-    const toDo = {};
-
-    if(toDoList) {
-      const lastId = toDoList[toDoList.length - 1].id;
-      toDo.id = lastId + 1;
-      toDo.name = this.inputText.value;
-      toDo.done = false;
-    } else {
-      toDoList = [];
-      toDo.id = 1;
-      toDo.name = this.inputText.value;
-      toDo.done = false;
-    }
-
-    const validToDo = this.validate(toDo.name);
+  async add() {
+    const toDo = {text: this.inputText.value, isCheck: false};
+    const validToDo = await this.validate(toDo.text);
 
     if(validToDo === true) {
-      toDoList.push(toDo);
-      localStorage.setItem("toDoList", JSON.stringify(toDoList));
-      this.inputText.value = "";
-      this.msgEl.innerText = "";
       this.inputText.removeAttribute("style");
-      this.listToHtml(toDoList);
-    } else {
-      this.notify(validToDo.msg, this.inputText);
-    }
+
+      fetch(`${this._api_base}/createTask`, {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(toDo)
+      })
+      .then( response => response.json() )
+      .then( ({data}) => {
+        this.inputText.value = "";
+        this.msgEl.innerText = "";
+        this.listToHtml(data)
+      });
+    } else this.notify(validToDo);
   }
   
-  setDone(id) {
-    const updateTodos = this.getData();
-    const foundInd = updateTodos.findIndex(toDo => toDo.id == id);
+  setIsCheck(id) {
+    let isCheck;
+    const toDos = this.getData();
 
-    if(foundInd > -1) {
-      updateTodos[foundInd].done = !updateTodos[foundInd].done;
-    }
+    toDos.then( ({data}) => {
+      const foundInd = data.findIndex(toDo => toDo.id == id);
 
-    localStorage.setItem("toDoList", JSON.stringify(updateTodos));
-    this.listToHtml(updateTodos);
+      if(foundInd > -1) isCheck = !data[foundInd].isCheck;
+
+      this.updateRequest( {id: id, isCheck: isCheck} );
+    });
   }
 
-  find(id) {
+  async find(id) {
     const toDoList = this.getData();
-    let foundToDo = false;
-    const foundInd = toDoList.findIndex( toDo => toDo.id == id );
-      
-    if(foundInd > -1) foundToDo = toDoList[foundInd];
 
-    return foundToDo;
+    return await toDoList.then( ({data}) => {
+      const foundInd = data.findIndex(toDo => toDo.id == id );
+
+      if(foundInd > -1) return data[foundInd];
+
+      return false;
+    });
   }
     
   update(id, newVal, activeInput) {
     let answer = true;
     const toDoList = this.getData(); 
-    const founInd = toDoList.findIndex( toDo => toDo.id == id );
 
-    if(founInd > -1) {
-      const validToDo = this.validate(newVal, id);
+    toDoList.then( async({data}) => {
+      const founInd = data.findIndex( toDo => toDo.id == id );
 
-      if(validToDo === true) {
-        toDoList[founInd].name = newVal;
-        localStorage.setItem("toDoList", JSON.stringify(toDoList));
-      } else {
-        this.notify(validToDo.msg, activeInput);
-        answer = false;
+      if(founInd > -1) {
+        const validToDo = await this.validate(newVal, id);
+
+        if(validToDo === true) {
+          this.updateRequest({id: id, text: newVal});
+        } else {
+          this.notify(validToDo, activeInput);
+          answer = false;
+        }
       }
-    }
-
-    return answer;
+      return answer;
+    });
   }
 
   edit(target, id) {
@@ -146,13 +138,32 @@ class ToDoList {
     undoIcon.addEventListener("click", () => {
       this.msgEl.innerText = "";
       const foundToDo = this.find(id);
+      
+      foundToDo.then(toDo => {
+        if(toDo) {
+          toDoInput.value = toDo.text;
+          toDoInput.removeAttribute("style");
+        }
+        
+        toDoInput.disabled = true;
+      });
+    });
+  }
 
-      if(foundToDo) {
-        toDoInput.value = foundToDo.name;
-        toDoInput.removeAttribute("style");
-      }
-
-      toDoInput.disabled = true;
+  updateRequest(toDo){
+    fetch(`${this._api_base}/updateTask`, {
+      method: 'PATCH',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(toDo)
+    }).
+    then( response => response.json() )
+    .then( ({data}) => {
+      this.inputText.value = "";
+      this.msgEl.innerText = "";
+      this.listToHtml(data)
     });
   }
 
@@ -163,21 +174,21 @@ class ToDoList {
     const spanDelete = document.createElement("span");
     const spanCheck = document.createElement("span");
     const input = document.createElement("input");
-    const doneDiv = document.createElement("div");
+    const isCheckDiv = document.createElement("div");
     const spanUndo = document.createElement("span");
     navDiv.setAttribute("class", "edit-delete");
     spanEdit.setAttribute("class", "edit-icon");
     spanEdit.innerHTML = `<i class="fa fa-edit"></i>`;
     spanDelete.setAttribute("class", "delete-icon");
     spanDelete.innerHTML = `<i class="fa fa-trash-o"></i>`;
-    spanCheck.setAttribute("class", "check-done");
+    spanCheck.setAttribute("class", "check-isCheck");
     spanCheck.innerHTML = `<i class="fa fa-check-circle"></i>`;
     navDiv.append(spanEdit);
     navDiv.append(spanDelete);
     li.append(navDiv);
-    input.setAttribute("value", toDo.name);
+    input.setAttribute("value", toDo.text);
 
-    if(toDo.done) {
+    if(toDo.isCheck) {
       input.classList.add("to-do-done", "to-do-text")
     } else {
       input.setAttribute("class", "to-do-text");
@@ -185,12 +196,12 @@ class ToDoList {
     
     input.setAttribute("disabled", true);
     li.append(input);
-    doneDiv.setAttribute("class", "done");
+    isCheckDiv.setAttribute("class", "done");
     spanUndo.setAttribute("class", "undo-icon");
     spanUndo.innerHTML = `<i class="fa fa-undo" aria-hidden="true"></i>`;
-    doneDiv.append(spanUndo);
-    doneDiv.append(spanCheck);
-    li.append(doneDiv);
+    isCheckDiv.append(spanUndo);
+    isCheckDiv.append(spanCheck);
+    li.append(isCheckDiv);
     this.listEl.append(li);
 
     spanCheck.addEventListener("click", ({target}) => {
@@ -198,41 +209,40 @@ class ToDoList {
         inp = inp.querySelector(".to-do-text");
 
         if(!inp.disabled) this.notify("finish editing first", inp);
-        else this.setDone(toDo.id);
+        else this.setIsCheck(toDo.id);
     });
 
     spanDelete.addEventListener("click", () => this.delete(toDo.id));
 
     spanEdit.addEventListener("click", ({target}) => {
-        if(!toDo.done) this.edit(target, toDo.id)
+        if(!toDo.isCheck) this.edit(target, toDo.id)
     });
   }
 
   delete(id) {
-    const toDoList = this.getData();
-    const newToDos = toDoList.filter( item => item.id !== id );
-    localStorage.setItem("toDoList", JSON.stringify(newToDos));
-       
-    if(newToDos.length < 1 ) {
-      localStorage.removeItem("toDoList");
-      this.notify("To-do list is empty");
-    }
+    fetch(`${this._api_base}/deleteTask?id=${id}`, {
+      method: 'DELETE',
+    })
+    .then( response => response.json() )
+    .then( ({data}) => {
+      this.listToHtml(data);
 
-    this.listToHtml(newToDos);
+      if(!data.length) this.notify("To-do list is empty");
+    });
   }
 
   listToHtml(todos) {
     this.listEl.innerHTML = "";
-    todos.sort((a, b) => a.done > b.done ? 1 : -1);
-    todos.forEach(toDo => this.createTodo(toDo));
+    todos.sort( (a, b) => a.isCheck > b.isCheck ? 1 : -1 );
+    todos.forEach(toDo =>  this.createTodo(toDo));
   }
 
   use() {
     const toDoList = this.getData();//retrive initial data
-
-    if(toDoList) this.listToHtml(toDoList);//render initial data
-    else this.notify("To-do list is empty");
-
+    toDoList.then( ({data}) => {
+      if(data.length) this.listToHtml(data);
+      else this.notify("To-do list is empty");
+    });
     this.addButton.onclick = () => this.add();//add todo
   }
 }
