@@ -9,8 +9,8 @@ class ToDoList {
     this.listEl = listEl;
   }
 
-  async getData() {
-     return await fetch(`${this._api_base}/allTasks`)
+  getData() {
+     return fetch(`${this._api_base}/allTasks`)
     .then(response => response.json());
   }
   
@@ -67,17 +67,13 @@ class ToDoList {
     } else this.notify(validToDo);
   }
   
-  setIsCheck(id) {
+  async setIsCheck(id) {
     let isCheck;
-    const toDos = this.getData();
+    const found = await this.find(id);
 
-    toDos.then( ({data}) => {
-      const foundInd = data.findIndex(toDo => toDo.id == id);
+    if(found) isCheck = !found.isCheck;
 
-      if(foundInd > -1) isCheck = !data[foundInd].isCheck;
-
-      this.updateRequest( {id: id, isCheck: isCheck} );
-    });
+    this.updateRequest( {id, isCheck} );
   }
 
   async find(id) {
@@ -92,25 +88,24 @@ class ToDoList {
     });
   }
     
-  update(id, newVal, activeInput) {
+  async update(id, newVal, activeInput) {
     let answer = true;
     const toDoList = this.getData(); 
 
-    toDoList.then( async({data}) => {
-      const founInd = data.findIndex( toDo => toDo.id == id );
+    const found = await this.find(id);
 
-      if(founInd > -1) {
-        const validToDo = await this.validate(newVal, id);
+    if(found) {
+      const validToDo = await this.validate(newVal, id);
 
-        if(validToDo === true) {
-          this.updateRequest({id: id, text: newVal});
-        } else {
-          this.notify(validToDo, activeInput);
-          answer = false;
-        }
+      if(validToDo === true) {
+        this.updateRequest({id, text: newVal});
+      } else {
+        this.notify(validToDo, activeInput);
+        answer = false;
       }
-      return answer;
-    });
+    }
+    
+    return answer;
   }
 
   edit(target, id) {
